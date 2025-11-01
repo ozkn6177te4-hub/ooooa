@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sayı Tahmin Oyunu</title>
+<style>
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-15px); }
+        60% { transform: translateY(-8px); }
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(-45deg, #a18cd1, #07eaff, #c267bd, #ff1414,#4c00ff, #d9d613, #2bff2b, #ff14e4);
+        background-size: 400% 400%;
+        animation: gradientBG 20s ease infinite;
+        transition: background 1s ease;
+    }
+
+    .game-container {
+        text-align: center;
+        background: rgba(255,255,255,0.9);
+        padding: 50px 40px;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        width: 90%;
+        max-width: 450px;
+        animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 { color: #333; font-size: 34px; margin-bottom: 25px; animation: bounce 2s infinite; }
+
+    button {
+        padding: 15px 30px;
+        font-size: 20px;
+        margin: 12px;
+        border: none;
+        border-radius: 25px;
+        background: linear-gradient(145deg, #6a11cb, #2575fc);
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    button::after {
+        content: "";
+        position: absolute;
+        width: 300%;
+        height: 300%;
+        top: -100%;
+        left: -100%;
+        background: rgba(255,255,255,0.2);
+        transform: rotate(45deg);
+        transition: all 0.5s;
+    }
+
+    button:hover::after { top: -50%; left: -50%; }
+
+    button:hover {
+        transform: translateY(-5px) scale(1.07);
+        background: linear-gradient(145deg, #2575fc, #6a11cb);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    input {
+        padding: 18px 20px;
+        font-size: 20px;
+        width: 100%;
+        border: 2px solid #888;
+        border-radius: 20px;
+        outline: none;
+        box-shadow: 2px 2px 15px rgba(0,0,0,0.1);
+        transition: 0.3s, transform 0.2s;
+        margin-top: 15px;
+        box-sizing: border-box;
+    }
+
+    input:focus {
+        border-color: #0077ff;
+        box-shadow: 2px 2px 15px rgba(0,119,255,0.4);
+        transform: scale(1.02);
+    }
+
+    #message {
+        margin-top: 25px;
+        font-weight: bold;
+        font-size: 26px;
+        min-height: 40px;
+        transition: all 0.5s ease;
+    }
+
+    #range, #attempts {
+        margin-top: 15px;
+        font-weight: bold;
+        font-size: 20px;
+        transition: all 0.5s ease;
+    }
+
+    .lose { color: red; font-size: 34px; animation: shake 0.5s; }
+    .win { color: #00ff3c; font-size: 34px; animation: bounce 1s infinite; }
+
+    .hidden { display: none; }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+    }
+
+    @media (max-width: 480px) {
+        h1 { font-size: 30px; }
+        #message { font-size: 22px; }
+        input, button { font-size: 18px; padding: 14px 18px; }
+    }
+    
+    /* Ana Sayfaya Dön Linki Stili */
+    .back-link {
+        display: inline-block;
+        margin-top: 30px; 
+        font-size: 18px;
+        font-weight: 700;
+        color: #333; 
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .back-link:hover {
+        color: #6a11cb; 
+    }
+</style>
+</head>
+<body>
+
+<div class="game-container" id="difficulty-container">
+    <h1>Zorluk Seç</h1>
+    <button onclick="startGame('kolay')">Kolay</button>
+    <button onclick="startGame('orta')">Orta</button>
+    <button onclick="startGame('zor')">Zor</button>
+    
+    <a href="index.html" class="back-link">
+        ← Ana Sayfa
+    </a>
+</div>
+
+<div class="game-container hidden" id="game-container">
+    <h1>Sayı Tahmin Oyunu</h1>
+    <p id="range"></p>
+    <input type="number" id="guess" placeholder="Tahmin">
+    <button id="guessBtn" onclick="checkGuess()">Tahmin Et</button>
+    <p id="message"></p>
+    <p id="attempts"></p>
+    <button id="resetBtn" onclick="resetGame()" class="hidden">Tekrar Oyna</button> 
+    
+    <a href="index.html" class="back-link" id="homeLink">
+        ← Ana Sayfa
+    </a>
+</div>
+
+<script>
+let min, max, randomNumber, attempts, maxAttempts;
+const gameContainer = document.getElementById('game-container');
+const difficultyContainer = document.getElementById('difficulty-container');
+const guessInput = document.getElementById('guess');
+const message = document.getElementById('message');
+const rangeDisplay = document.getElementById('range');
+const attemptsDisplay = document.getElementById('attempts');
+const resetBtn = document.getElementById('resetBtn');
+
+function startGame(level) {
+    attempts = 0;
+    switch(level) {
+        case 'kolay': min=1; max=50; maxAttempts=10; break;
+        case 'orta': min=1; max=100; maxAttempts=10; break;
+        case 'zor': min=1; max=1000; maxAttempts=5; break;
+    }
+    randomNumber = Math.floor(Math.random()*(max-min+1)) + min;
+    difficultyContainer.classList.add('hidden');
+    gameContainer.classList.remove('hidden');
+    rangeDisplay.textContent = `${min} - ${max}`;
+    attemptsDisplay.textContent = `Deneme: 0 / ${maxAttempts}`;
+    guessInput.value = '';
+    guessInput.disabled = false;
+    message.textContent = '';
+    resetBtn.classList.add('hidden'); 
+    guessInput.focus();
+}
+
+function checkGuess() {
+    let guess = guessInput.value.trim();
+    if (guess==='' || isNaN(guess)) { message.textContent='Lütfen geçerli bir sayı gir!'; message.className=''; return; }
+    guess = Number(guess);
+    if (guess<min || guess>max) { message.textContent=`Lütfen ${min} - ${max} arasında bir sayı gir!`; message.className=''; return; }
+
+    attempts++;
+    attemptsDisplay.textContent = `Deneme: ${attempts} / ${maxAttempts}`;
+    if (guess < randomNumber) { 
+        min = guess + 1; 
+        message.textContent='Daha büyük bir sayı dene!'; 
+        message.className=''; 
+    } else if (guess > randomNumber) { 
+        max = guess - 1; 
+        message.textContent='Daha küçük bir sayı dene!'; 
+        message.className=''; 
+    } else { 
+        // Kazanma durumu
+        message.textContent=`🎉 Tebrikler! ${attempts} denemede doğru tahmin ettin! 🎉`;
+        message.className='win';
+        guessInput.disabled=true;
+        resetBtn.classList.remove('hidden'); 
+        return;
+    }
+    
+    if(attempts>=maxAttempts) { 
+        // Kaybetme durumu
+        message.textContent=`KAYBETTİN! Doğru sayı ${randomNumber} idi.`; 
+        message.className='lose'; 
+        guessInput.disabled=true; 
+        resetBtn.classList.remove('hidden'); 
+    }
+    
+    rangeDisplay.textContent=`${min} - ${max}`;
+    guessInput.value=''; 
+    guessInput.focus();
+}
+
+function resetGame() {
+    gameContainer.classList.add('hidden');
+    difficultyContainer.classList.remove('hidden');
+    resetBtn.classList.add('hidden'); 
+}
+
+guessInput.addEventListener('keydown', function(e){ 
+    if(e.key==='Enter' && !guessInput.disabled) {
+        checkGuess(); 
+    }
+});
+</script>
+
+</body>
+</html>

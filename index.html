@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myli Mini Oyun - Ana Sayfa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Genel Stiller ve SADE Renkler */
+        :root {
+            --myli-main-color: #333333; 
+            --myli-secondary-color: #666666; 
+            --myli-accent-color: #007bff; 
+            --header-bg: #FFFFFF; 
+            --body-bg: #F0F0F0; 
+            --main-bg: #FFFFFF; 
+            --text-color: #333333; 
+            --game-card-shadow: rgba(0, 0, 0, 0.15); 
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--body-bg); 
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            background-color: var(--main-bg); 
+            min-height: 100vh;
+        }
+
+        /* 1. Üst Yatay Çubuk (Header) */
+        .header {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 15px 5vw; 
+            background-color: var(--header-bg); 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-button {
+            font-size: 1.8rem;
+            font-weight: 800; 
+            color: var(--myli-main-color); 
+            text-decoration: none; 
+            transition: color var(--transition-speed);
+            margin-right: 20px; 
+            flex-shrink: 0;
+        }
+
+        .header-button:hover {
+            color: var(--myli-secondary-color); 
+        }
+        
+        /* Arama Çubuğu Konteyneri */
+        .search-container {
+            position: relative;
+            flex-grow: 1; 
+            max-width: 400px;
+            margin: 0 20px; 
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px; 
+            border: 2px solid #DDDDDD; 
+            border-radius: 25px; 
+            font-size: 1rem;
+            color: var(--text-color);
+            background-color: #ffffff; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--myli-accent-color); 
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1); 
+            outline: none;
+        }
+
+        /* Sosyal Medya İkonu Stili */
+        .social-link {
+            font-size: 1.5rem;
+            color: black; 
+            transition: transform var(--transition-speed), color var(--transition-speed);
+            flex-shrink: 0; 
+        }
+
+        .social-link:hover {
+            color: var(--myli-secondary-color); 
+            transform: scale(1.1);
+        }
+
+        /* 2. Oyun Konteyneri */
+        .game-section {
+            padding: 40px 5vw; 
+            overflow-x: hidden; 
+        }
+        
+        .game-list-wrapper {
+            display: flex;
+            justify-content: center; 
+        }
+
+        .game-list {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 25px; 
+            max-width: 1200px; 
+        }
+
+        /* 3. Oyun Kartları */
+        .game-card-link {
+            display: block; 
+            text-decoration: none;
+        }
+
+        .game-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; 
+            width: 250px; 
+            height: 300px;
+            max-width: 100%; 
+            border-radius: 20px;
+            overflow: hidden;
+            color: white; 
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 5px 15px var(--game-card-shadow); 
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+            
+            /* GÖRSEL YOLU GÜNCELLENDİ VE YEDEK EKLENDİ */
+            background: url('img/SAYIITAHMIN.jpg') no-repeat center center; 
+            background-size: cover; 
+            background-color: #FF6B6B; /* Eğer resim yüklenmezse bu renk gösterilir */
+        }
+        
+        .game-card-content {
+            position: relative;
+            z-index: 2;
+            /* Görsel üzerindeki yazının daha iyi okunması için hafif bir arka plan */
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+            padding-top: 50px; 
+            margin: -20px; 
+            padding-bottom: 20px;
+        }
+
+        .game-card-title {
+            font-size: 1.5rem;
+            font-weight: 700; 
+            white-space: normal;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); 
+            padding: 0 20px; 
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px) scale(1.04); 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); 
+        }
+        
+        /* 4. Responsive Tasarım (Mobil) */
+        @media (max-width: 768px) {
+             .header {
+                flex-wrap: wrap; 
+                justify-content: space-between;
+                padding: 10px 4vw;
+            }
+            .header-button {
+                margin-left: 0;
+                margin-right: auto;
+                order: 1; 
+            }
+            .social-link {
+                order: 2; 
+            }
+            .search-container {
+                order: 3; 
+                width: 100%;
+                max-width: 100%;
+                margin: 10px 0 0 0;
+            }
+            .game-card {
+                width: 100%; 
+            }
+        }
+    </style>
+</head>
+<body class="main-container">
+
+    <header class="header">
+        <a href="index.html" class="header-button">
+            Myli Mini Oyun
+        </a>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" onkeyup="filterGames()" placeholder="🔎 Oyun ismi ile ara..." class="search-input">
+        </div>
+        
+        <a href="https://www.instagram.com/ozkqn20/" target="_blank" aria-label="Instagram Sayfasına Git" class="social-link">
+            <i class="fab fa-instagram"></i>
+        </a>
+    </header>
+
+    <main class="game-section">
+        <div class="game-list-wrapper">
+            <div class="game-list">
+                
+                <a href="Sayi-Tahmin.html" class="game-card-link">
+                    <div class="game-card">
+                        <div class="game-card-content">
+                            <h3 class="game-card-title">Sayı Tahmin Oyunu</h3>
+                        </div>
+                    </div>
+                </a>
+                
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function filterGames() {
+            let input = document.getElementById('searchInput');
+            let filter = input.value.toUpperCase().trim(); 
+
+            let item = document.querySelector('.game-card-link');
+            
+            if (item) {
+                let titleElement = item.querySelector('.game-card-title');
+                
+                if (titleElement) {
+                    let titleText = titleElement.textContent || titleElement.innerText;
+                    
+                    if (titleText.toUpperCase().startsWith(filter)) {
+                        item.style.display = ""; 
+                    } else {
+                        item.style.display = "none"; 
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
